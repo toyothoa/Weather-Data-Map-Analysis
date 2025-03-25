@@ -1,20 +1,313 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab 9 weather", "lab 9 weather\lab 9 weather.vcxproj", "{EE231482-BBCE-4425-AAE5-0159946F7D87}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EE231482-BBCE-4425-AAE5-0159946F7D87}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EE231482-BBCE-4425-AAE5-0159946F7D87}.Debug|Win32.Build.0 = Debug|Win32
-		{EE231482-BBCE-4425-AAE5-0159946F7D87}.Release|Win32.ActiveCfg = Release|Win32
-		{EE231482-BBCE-4425-AAE5-0159946F7D87}.Release|Win32.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-EndGlobal
+#include "library.h"
+
+//string open_file_pop_up("", string dir, string title);
+const int days[]= {31,28,31,30,31,30,31,31,30,31,30,31};
+
+int month_length(const int month, const int year)
+{
+if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month ==10 || month == 12)
+{
+return 31;
+}
+if (month == 2)
+{
+if (year % 4 == 0)
+{
+return 29;
+}
+else
+{
+return 28;
+}
+}
+else
+{
+return 30;
+}
+}
+
+int worker_doy(const int x, const int month, const int day, const int year, const int sum)
+{
+if (x==month)
+{
+if (year % 4 == 0 && month > 2)
+{
+return sum + day + 1;
+}
+else
+{
+return sum + day;
+} 
+}
+return worker_doy(x+1, month, day, year, days[x-1] + sum);
+}
+
+int doy(const int month, const int day, const int year)
+{
+return worker_doy(1, month, day, year, 0);
+}
+
+void read_avgTemp()
+{
+	ifstream fin("C:\\Users\\thoa\\Downloads\\MIAMI-FL.txt");
+		if (fin.fail())
+		{ 
+			cout << "Cannot read the file\n";
+			return; 
+		}
+		int year, month, day;
+		double minTemp, avgTemp, maxTemp, maxWind, depth, precip;
+	if (fin.fail())
+	{
+		cout << "Not three ints at the beginning of the file!\n";
+	}
+	else
+	{
+		int i = 0;
+		while (fin >> year >> month >> day >> minTemp >> avgTemp >> maxTemp >> maxWind >> depth >> precip)
+		{
+			if(i == 0)
+			{
+				move_to(double (doy(month, day, year))*2 + 150, (600 - (avgTemp * 3))- 200);
+			}
+			cout << year << " " << month << " " << day << " " << minTemp << " " << avgTemp << " " << maxTemp << " " << maxWind << " " << depth << " " << precip << endl;
+			set_pen_color(color::green);
+			draw_to(double (doy(month, day, year))*2 + 150, (600 - (avgTemp * 3))- 200);
+			i++; //adds to i so it is able to continue plotting the points without making a straight line from the middle
+		}
+		fin.close();
+	}
+}
+
+void read_minTemp()
+{
+	ifstream fin("C:\\Users\\thoa\\Downloads\\MIAMI-FL.txt");
+		if (fin.fail())
+		{ 
+			cout << "Cannot read the file\n";
+			return; 
+		}
+		int year, month, day;
+		double minTemp, avgTemp, maxTemp, maxWind, depth, precip;
+	if (fin.fail())
+	{
+		cout << "Not three ints at the beginning of the file!\n";
+	}
+	else
+	{
+		int i = 0;
+		while (fin >> year >> month >> day >> minTemp >> avgTemp >> maxTemp >> maxWind >> depth >> precip)
+		{
+			if(i == 0)
+			{
+				move_to(double (doy(month, day, year))*2 + 150, (600 - (minTemp * 3)) - 250);
+			}
+			set_pen_color(color::blue);
+			draw_to(double (doy(month, day, year))*2 + 150, (600 - (minTemp * 3)) - 250);
+			i++; 
+		}
+		fin.close();
+	}
+}
+
+void read_maxTemp()
+{
+	ifstream fin("C:\\Users\\thoa\\Downloads\\MIAMI-FL.txt");
+		if (fin.fail())
+		{ 
+			cout << "Cannot read the file\n";
+			return; 
+		}
+		int year, month, day;
+		double minTemp, avgTemp, maxTemp, maxWind, depth, precip;
+	if (fin.fail())
+	{
+		cout << "Not three ints at the beginning of the file!\n";
+	}
+	else
+	{
+		int i = 0;
+		while (fin >> year >> month >> day >> minTemp >> avgTemp >> maxTemp >> maxWind >> depth >> precip)
+		{
+			if(i == 0)
+			{
+				move_to(double (doy(month, day, year))*2 + 150, (600 - (maxTemp * 3))- 250);
+			}
+			set_pen_color(color::red);
+			draw_to(double (doy(month, day, year))*2 + 150, (600 - (maxTemp * 3))- 250);
+			i++; 
+		}
+		fin.close();
+	}
+}
+
+void vgrid()
+{
+	set_pen_color(color::dark_grey);
+	set_pen_width(1);
+	move_to(880,50);
+	draw_to(880,550);
+	draw_to(150,550);
+	draw_to(150,50);
+	draw_to(880,50);
+
+	move_to(double (880 - (730/12)), 50.0);
+	set_heading_degrees(180);
+	set_pen_color(color::dark_grey);
+
+
+	
+
+	draw_distance(500);
+	turn_right_by_degrees(90);
+
+	draw_distance(double (61));
+	turn_right_by_degrees(90);
+	draw_distance(500);
+
+	turn_left_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_left_by_degrees(90);
+	draw_distance(500);
+
+	turn_right_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_right_by_degrees(90);
+	draw_distance(500);
+
+	turn_left_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_left_by_degrees(90);
+	draw_distance(500);
+
+	turn_right_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_right_by_degrees(90);
+	draw_distance(500);
+
+	turn_left_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_left_by_degrees(90);
+	draw_distance(500);
+
+	turn_right_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_right_by_degrees(90);
+	draw_distance(500);
+
+	turn_left_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_left_by_degrees(90);
+	draw_distance(500);
+
+	turn_right_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_right_by_degrees(90);
+	draw_distance(500);
+
+	turn_left_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_left_by_degrees(90);
+	draw_distance(500);
+
+	turn_right_by_degrees(90);
+	draw_distance(double (61));
+
+	turn_right_by_degrees(90);
+	draw_distance(500);
+
+	set_font_size(20);
+	move_to(160,570);
+	write_string("JAN");
+	move_to(220,570);
+	write_string("FEB");
+	move_to(280,570);
+	write_string("MAR");
+	move_to(340,570);
+	write_string("APR");
+	move_to(400,570);
+	write_string("MAY");
+	move_to(465,570);
+	write_string("JUN");
+	move_to(525,570);
+	write_string("JUL");
+	move_to(585,570);
+	write_string("AUG");
+	move_to(645,570);
+	write_string("SEP");
+	move_to(705,570);
+	write_string("OCT");
+	move_to(765,570);
+	write_string("NOV");
+	move_to(825,570);
+	write_string("DEC");
+
+	set_font_size(20);
+	move_to(450,610);
+	write_string("X-axis: Months");
+}
+
+void hlabels(int x, int y)
+{
+	if (y < 560)
+	{
+		set_font_size(15);
+		move_to(130,y);
+		write_string(x);
+		hlabels(x-10,y+20);
+	}
+	set_font_size(20);
+	move_to(25,250);
+	write_string("Y-axis:");
+	move_to(25,270);
+	write_string("Fahrenheit");
+}
+
+void hgrid(int y)
+{
+	if (y < 535)
+	{
+		move_to(150,y);
+		set_heading_degrees(90);
+		draw_distance(730);
+		hgrid(y+20);
+	}
+}
+
+void main()
+{
+	make_window(1200,700);
+	set_caption("Miami, Florida");
+	move_to(370,35);
+	set_font_size(30);
+	write_string("Miami, Florida's Weather");
+
+	set_pen_width(2);
+	read_minTemp();
+	read_maxTemp();
+	vgrid();
+	hgrid(50);
+	hlabels(180,75);
+
+	set_pen_width(10);
+	set_pen_color(color::red);
+	draw_point(920,280);
+	set_font_size(20);
+	move_to(930,285);
+	write_string(": Maximum Temperature");
+
+	set_pen_color(color::blue);
+	draw_point(920,300);
+	move_to(930,305);
+	write_string(": Minimum Temperature");
+}
+
